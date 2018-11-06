@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" >
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+    <script src="https://unpkg.com/contentful-ui-extensions-sdk@3"></script>
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.8.7/showdown.min.js"></script>
+    
+    <link rel="stylesheet" href="https://assets.ctfassets.net/a2lh2k5b766a/6coZHAyereYMyg0c6ks2ga/9ba8e7234145d17763fe71d261c51ca8/vwstyle.css">
+  </head>
+
+  <body>
+
+    <div id="app">
+
+      <section class="section">
+        <textarea id="editor" class="box">
+        </textarea>
+      </section>
+
+    </div>
+
+
+    <script>    
+      var vue = null;
+      var simplemde = null;
+      var converter = null;
+      
+      var converterOptions = {
+      	noHeaderId: true,
+        literalMidWordUnderscores: true,
+        simpleLineBreaks: true,
+        openLinksInNewWindow: true
+      };
+
+      window.contentfulExtension.init(function (api) {
+        api.window.startAutoResizer();		
+				
+        // Initialte MD to HTML Converter
+        converter = new showdown.Converter(converterOptions);
+
+        // initiate VUE
+        vue = new Vue({
+          el: "#app",
+          data: {
+            md: "",
+            html: ""
+          },
+          watch: {
+            md: function() {
+              this.html = converter.makeHtml(this.md);
+            }
+          },
+          methods: {
+            saveContent: function() {
+              var saveObj = {
+              	md: this.md,
+                html: this.html
+              }
+              api.field.setValue(saveObj);
+            },
+            getHTML: function() {
+            	return this.html;
+            }
+          }
+        });
+
+        // Initiate MK Editor
+        simplemde = new SimpleMDE({ 
+          autofocus: true,
+          element: document.getElementById("editor"),
+          parsingConfig: {
+            allowAtxHeaderWithoutSpace: true,
+            strikethrough: false,
+            underscoresBreakWords: true,
+          },
+          shortcuts: {
+            drawTable: "Cmd-Alt-T"
+          },
+          spellChecker: false,
+          status: ["autosave", "lines", "words", "cursor"], // Optional usage
+          styleSelectedText: false,
+          tabSize: 4,
+          toolbar: ["heading", "bold", "italic", "link", "|", "unordered-list", "ordered-list", "|", {
+            name: "Speichern",
+            action: function() {
+              vue.saveContent();
+            },
+            className: "fas fa-save",
+            title: "Speichern"
+          }],
+        });
+        
+        // reload saved state
+        const oldValue = api.field.getValue();
+
+        try {
+          vue.md = oldValue.md;
+          vue.html = oldValue.html;
+
+          simplemde.value(oldValue.md);
+        } catch (error) {
+        	console.log(error);
+        }
+
+        // SimpleMDE Events
+        simplemde.codemirror.on('change', function() {
+          vue.md = simplemde.value();
+        });
+        
+      });
+    </script>
+  </body>
+</html>
