@@ -1,0 +1,6 @@
+{
+    "id": "markdownUIExtension",
+    "name": "Markdown UI Extension",
+    "src": "./index.html",
+    "fieldTypes": ["Object"]
+}

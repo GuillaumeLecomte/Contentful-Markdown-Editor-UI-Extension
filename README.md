@@ -11,6 +11,7 @@ In this editor you insert keys from [Phraseapp](https://phraseapp.com/ "Phraseap
 ![Contentful Phraseapp UI Extension](https://raw.githubusercontent.com/TinkeringAround/Contentful-Markdown-Editor-UI-Extension/master/images/Contentful-Markdown-Editor-Extension.PNG "Contentful Markdown Editor UI Extension")
 
 ## Setup
+Just copy the *index.html* file into the Code Block in Contentful Web-App or use Contentful CLI.
 ![Contentful Phraseapp UI Extension](https://raw.githubusercontent.com/TinkeringAround/Contentful-Markdown-Editor-UI-Extension/master/images/Setup.PNG "Contentful Markdown Editor UI Extension")
 
 
